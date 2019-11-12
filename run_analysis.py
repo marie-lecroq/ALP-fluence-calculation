@@ -30,7 +30,7 @@ local_partition = partition[rank]
 start_time = time.time()
 for lgm, lgg in local_partition:
     # g needs to be in units of eV^-1
-    res = F_exp_new(10**lgm,10**(lgg-9.0))
+    res = expected_photon_fluence(10**lgm,10**(lgg-9.0))
     print('{:.3f} {:7.3f} {:.10e}'.format(lgm,lgg,res))
     local_results.append(res)
 print('MPI rank {} finished! Calculations took {:.1f} min.'.format(rank,(time.time()-start_time)/60.0))

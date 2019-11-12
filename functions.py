@@ -18,28 +18,15 @@ dt = 223.0 #Duration of the measurement
 min_erg, max_erg = 0.0, 5.0e8 #Min. and max. values of the energy (for integration)
 erg_window_lo, erg_window_up = 2.5e7, 1.0e8 #Min. and max. values of the energy (the experimental window)
 number_alps = int(1e0) #Number of particles of fixed m and g in the simulation
-# N.B.: according to arXiv:1702.02964, results are stable for number_alps > 1e7
+# N.B.: according to arXiv:1702.02964, results are stable for number_alps > 1e7.
 
-# Beta factor
+### Auxiliary functions
+
+# Beta factor in special relativity
 def betafactor(m,E):
     return np.sqrt(1.0 - m*m/(E*E))
 
-# Inverse of cot(x) = cos(x)/sin(x)
-def arccot(x):
-    res = 0.5*np.pi - np.arctan(x)
-    return res
-
-# Naive axion fluence (fluence for one photon per axion)
-def F_naive(m,g):
-    res = quad(lambda E : spectrum(m,g,E), min_erg, max_erg)[0]
-    return (1.0/(4.0*np.pi*d*d)) * res / 1.0e4
-
-# Inverse CDF of the angular distribution
-def angDistInvCDF(u,b):
-    x = 2.0*u - 1.0
-    return (b + x)/(1.0 + b*x)
-
-# Typical decay length according to eq(3) in arXiv:1702.02964
+# Decay length according to Eq (3) in arXiv:1702.02964
 def l_ALP(m,g,E):
     x = 1.0e7/m
     x2 = x*x
@@ -72,9 +59,15 @@ def spectrum(m,g,E):
         res = C*E*E*sigma(m,g,E)/(np.exp(E/T) - 1.0)
     return res
 
+# Naive axion fluence (fluence for one photon per axion)
+def naive_photon_fluence(m,g):
+    res = quad(lambda E : spectrum(m,g,E), min_erg, max_erg)[0]
+    return (1.0/(4.0*np.pi*d*d)) * res / 1.0e4
+
+# Compute the CDF for the low-mass energy spectrum:
 erg_vals = np.linspace(min_erg, max_erg, num=5001)
 cdf_vals = []
-# It is okay to fix the value of g as it just rescales the spectrum
+# N.B. It is okay to fix the value of g as it just rescales the spectrum.
 norm = quad(lambda E : spectrum(0.0,1.0e-20,E), min_erg, max_erg)[0]
 for erg in erg_vals:
     temp = quad(lambda E : spectrum(0.0,1.0e-20,E), min_erg, erg)[0]
@@ -84,9 +77,11 @@ for erg in erg_vals:
         cdf_vals.append(0.0)
 inv_cdf_massless = interp1d(cdf_vals, erg_vals, kind='linear')
 
+### Main function
+
 # Theoretically measured fluence
-def F_exp_new(m,g):
-    naive_fluence = F_naive(m,g)
+def expected_photon_fluence(m,g):
+    naive_fluence = naive_photon_fluence(m,g)
     inv_cdf = inv_cdf_massless
     # Only recalculate CDF from spectrum for heavier axions; otherwise the m = 0 version above is used.
     if (m > 1.0e6):
@@ -94,7 +89,7 @@ def F_exp_new(m,g):
         new_max_erg = min(500.0*m,1.5e9)
         n = int((new_max_erg-m)/(0.1*m))+1
         erg_vals = np.linspace(m, new_max_erg, num=n)
-        # It is okay to fix the value of g as it just rescales the spectrum
+        #  N.B. It is okay to fix the value of g as it just rescales the spectrum.
         norm = quad(lambda E : spectrum(m,1.0e-20,E), m, new_max_erg)[0]
         for erg in erg_vals:
             temp = quad(lambda E : spectrum(m,1.0e-20,E), m, erg)[0]
@@ -114,14 +109,14 @@ def F_exp_new(m,g):
             L1 = rd.exponential(scale=l, size=None)
             if (L1 < d) and (L1 > Reff):
                bf = betafactor(m,E)
-               # Draw a random angle in the axion rest frame, cos(angle), from [-1,1] (i.e. angle in [0,pi])
+               # Draw a random angle in the axion rest frame, cos(angle), from [-1,1] (i.e. angle in [0,pi]):
                phi = 2.0*np.pi*rd.random_sample()
                cos_theta = 2.0*rd.random_sample() - 1.0
                sin_theta = np.sin(np.arccos(cos_theta))
                cos_phi = np.cos(phi)
                sin_phi = np.sin(phi)
                x = (1.0 - bf*bf)*(sin_phi*sin_phi*sin_theta*sin_theta + cos_theta*cos_theta)
-               # Photon 1 -> transform angle, energy, and L1 to lab frame
+               # Photon 1 -> transform angle, energy, and L1 to lab frame:
                E1 = 0.5*E*(1.0 + bf*sin_theta*cos_phi)
                if (E1 > erg_window_lo) and (E1 < erg_window_up):
                    angle1 = bf + cos_phi*sin_theta
@@ -131,7 +126,7 @@ def F_exp_new(m,g):
                    time1 = (L1/bf + L21 - d)/c
                    if (time1 < dt) and (time1 > 0):
                        counts += 1
-               # Photon 2 -> transform angle, energy, and L1 to lab frame
+               # Photon 2 -> transform angle, energy, and L1 to lab frame:
                E2 = 0.5*E*(1.0 - bf*sin_theta*cos_phi)
                if (E2 > erg_window_lo) and (E2 < erg_window_up):
                    angle2 = bf - cos_phi*sin_theta
@@ -144,5 +139,4 @@ def F_exp_new(m,g):
     #res = open('results_new.txt','a')
     #res.write(' '.join((str(np.log10(m)), str(np.log10(g)), str(counts/float(number_alps) * naive_fluence))) + '\n')
     #res.close()
-    #return naive_fluence*counts/float(number_alps)
-    return np.log10(m)-np.log10(g)-9.0
+    return naive_fluence*counts/float(number_alps)

@@ -17,7 +17,7 @@ T = 30.6e6 #Effective temperature in eV
 dt = 223.0 #Duration of the measurement
 min_erg, max_erg = 0.0, 5.0e8 #Min. and max. values of the energy (for integration)
 erg_window_lo, erg_window_up = 2.5e7, 1.0e8 #Min. and max. values of the energy (the experimental window)
-number_alps = int(1e0) #Number of particles of fixed m and g in the simulation
+number_alps = int(1e4) #Number of particles of fixed m and g in the simulation
 # N.B.: according to arXiv:1702.02964, results are stable for number_alps > 1e7.
 
 ### Auxiliary functions
@@ -79,7 +79,7 @@ inv_cdf_massless = interp1d(cdf_vals, erg_vals, kind='linear')
 
 ### Main function
 
-# Theoretically measured fluence
+# Theoretically measured fluence given mass m/eV and ALP-photon coupling g/eV^-1
 def expected_photon_fluence(m,g):
     naive_fluence = naive_photon_fluence(m,g)
     inv_cdf = inv_cdf_massless
@@ -136,7 +136,10 @@ def expected_photon_fluence(m,g):
                    time2 = (L1/bf + L22 - d)/c
                    if (time2 < dt) and (time2 > 0):
                         counts += 1
-    #res = open('results_new.txt','a')
-    #res.write(' '.join((str(np.log10(m)), str(np.log10(g)), str(counts/float(number_alps) * naive_fluence))) + '\n')
-    #res.close()
     return naive_fluence*counts/float(number_alps)
+
+
+# Needs outfile = open('./results_new_{}.txt'.format(rank),'w') and outfile.close() at the end.
+def expected_photon_fluence_checkpoints(m,g,outfile):
+    res = expected_photon_fluence(m,g)
+    outfile.write('{:.3f} {:.3f} {:.10e}\n'.format( np.log10(m), np.log10(g)+9.0, res ))

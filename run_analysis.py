@@ -29,7 +29,7 @@ start_time = time.time()
 for lgm, lgg in local_partition:
     # Here, just get the result. Use the alternative function to save intermediate results.
     res = expected_photon_fluence(10**lgm,10**(lgg-9.0))
-    #print('{:.3f} {:7.3f} {:.10e}'.format(lgm,lgg,res))
+    #print('{:.3f} {:.3f} {:.10e}'.format(lgm,lgg,res))
     local_results.append(res)
 print('MPI rank {} finished! MC simulations took {:.1f} mins.'.format( rank, (time.time()-start_time)/60.0 ))
 

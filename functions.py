@@ -3,7 +3,7 @@ from scipy.integrate import quad
 from scipy.interpolate import interp1d
 import numpy.random as rd
 
-### Experimental and physical constants
+### Experimental and physical constants ###
 
 alpha = 1.0/137.035999084 #Fine structure constant
 c = 3.0e8 #Speed of light
@@ -20,7 +20,7 @@ erg_window_lo, erg_window_up = 2.5e7, 1.0e8 #Min. and max. values of the energy 
 number_alps = int(1e4) #Number of particles of fixed m and g in the simulation
 # N.B.: according to arXiv:1702.02964, results are stable for number_alps > 1e7.
 
-### Auxiliary functions
+### Auxiliary functions ###
 
 # Beta factor in special relativity
 def betafactor(m,E):
@@ -77,7 +77,7 @@ for erg in erg_vals:
         cdf_vals.append(0.0)
 inv_cdf_massless = interp1d(cdf_vals, erg_vals, kind='linear')
 
-### Main function
+### Main functions ###
 
 # Theoretically measured fluence given mass m/eV and ALP-photon coupling g/eV^-1
 def expected_photon_fluence(m,g):
@@ -109,14 +109,16 @@ def expected_photon_fluence(m,g):
             L1 = rd.exponential(scale=l, size=None)
             if (L1 < d) and (L1 > Reff):
                bf = betafactor(m,E)
-               # Draw a random angle in the axion rest frame, cos(angle), from [-1,1] (i.e. angle in [0,pi]):
+               # Draw random angles in the axion rest frame;
+               # cos(angle) from [-1,1] (i.e. angle in [0,pi]) and phi from [0,2pi]:
                phi = 2.0*np.pi*rd.random_sample()
                cos_theta = 2.0*rd.random_sample() - 1.0
                sin_theta = np.sin(np.arccos(cos_theta))
                cos_phi = np.cos(phi)
                sin_phi = np.sin(phi)
+               # Factor needed for Lorentz transformation:
                x = (1.0 - bf*bf)*(sin_phi*sin_phi*sin_theta*sin_theta + cos_theta*cos_theta)
-               # Photon 1 -> transform angle, energy, and L1 to lab frame:
+               # Photon 1. Transform angle and energy into the lab frame:
                E1 = 0.5*E*(1.0 + bf*sin_theta*cos_phi)
                if (E1 > erg_window_lo) and (E1 < erg_window_up):
                    angle1 = bf + cos_phi*sin_theta
@@ -126,7 +128,7 @@ def expected_photon_fluence(m,g):
                    time1 = (L1/bf + L21 - d)/c
                    if (time1 < dt) and (time1 > 0):
                        counts += 1
-               # Photon 2 -> transform angle, energy, and L1 to lab frame:
+               # Photon 2. Transform angle and energy into the lab frame:
                E2 = 0.5*E*(1.0 - bf*sin_theta*cos_phi)
                if (E2 > erg_window_lo) and (E2 < erg_window_up):
                    angle2 = bf - cos_phi*sin_theta
@@ -138,8 +140,8 @@ def expected_photon_fluence(m,g):
                         counts += 1
     return naive_fluence*counts/float(number_alps)
 
-
-# Needs outfile = open('./results_new_{}.txt'.format(rank),'w') and outfile.close() at the end.
+# Alternative routine that saves the result for each parameter point to a local/unique file.
+# Needs outfile = open('./results_new_{}.txt'.format(rank),'a') and outfile.close() for each rank.
 def expected_photon_fluence_checkpoints(m,g,outfile):
     res = expected_photon_fluence(m,g)
     outfile.write('{:.3f} {:.3f} {:.10e}\n'.format( np.log10(m), np.log10(g)+9.0, res ))

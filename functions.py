@@ -6,10 +6,10 @@ import numpy.random as rd
 ### Experimental and physical constants ###
 
 alpha = 1.0/137.035999084 #Fine structure constant
-c = 3.0e8 #Speed of light
+c = 3.0e8 #Speed of light in m/s
 
-d = 51.4*3.08567758149137e19 #Distance from SN1987A to Earth
-Reff = 3.0e10 #Effective radius of the SN below which photons are not released
+d = 51.4*3.08567758149137e19 #Distance from SN1987A to Earth in m
+Reff = 3.0e10 #Effective radius of the SN below which photons are not released in m
 ks = 16.8e6 #Effective Debye screening scale in eV
 C = 2.54e71 #Multiplicative constant in eV^-1
 T = 30.6e6 #Effective temperature in eV
@@ -17,7 +17,7 @@ T = 30.6e6 #Effective temperature in eV
 dt = 223.0 #Duration of the measurement
 min_erg, max_erg = 0.0, 5.0e8 #Min. and max. values of the energy (for integration)
 erg_window_lo, erg_window_up = 2.5e7, 1.0e8 #Min. and max. values of the energy (the experimental window)
-number_alps = int(1e4) #Number of particles of fixed m and g in the simulation
+number_alps = int(1e7) #Number of particles of fixed m and g in the simulation
 # N.B.: according to arXiv:1702.02964, results are stable for number_alps > 1e7.
 
 ### Auxiliary functions ###
@@ -59,8 +59,8 @@ def spectrum(m,g,E):
         res = C*E*E*sigma(m,g,E)/(np.exp(E/T) - 1.0)
     return res
 
-# Naive axion fluence (fluence for one photon per axion)
-def naive_photon_fluence(m,g):
+# Axion fluence from SN1987A (= naive fluence for one photon per axion)
+def axion_fluence(m,g):
     res = quad(lambda E : spectrum(m,g,E), min_erg, max_erg)[0]
     return (1.0/(4.0*np.pi*d*d)) * res / 1.0e4
 
@@ -81,7 +81,7 @@ inv_cdf_massless = interp1d(cdf_vals, erg_vals, kind='linear')
 
 # Theoretically measured fluence given mass m/eV and ALP-photon coupling g/eV^-1
 def expected_photon_fluence(m,g):
-    naive_fluence = naive_photon_fluence(m,g)
+    naive_one_photon_fluence = axion_fluence(m,g)
     inv_cdf = inv_cdf_massless
     # Only recalculate CDF from spectrum for heavier axions; otherwise the m = 0 version above is used.
     if (m > 1.0e6):
@@ -115,14 +115,10 @@ def expected_photon_fluence(m,g):
                cos_theta = 2.0*rd.random_sample() - 1.0
                sin_theta = np.sin(np.arccos(cos_theta))
                cos_phi = np.cos(phi)
-               sin_phi = np.sin(phi)
-               # Factor needed for Lorentz transformation:
-               x = (1.0 - bf*bf)*(sin_phi*sin_phi*sin_theta*sin_theta + cos_theta*cos_theta)
                # Photon 1. Transform angle and energy into the lab frame:
                E1 = 0.5*E*(1.0 + bf*sin_theta*cos_phi)
                if (E1 > erg_window_lo) and (E1 < erg_window_up):
-                   angle1 = bf + cos_phi*sin_theta
-                   angle1 = np.arccos(angle1/np.sqrt(x + angle1*angle1))
+                   angle1 = np.arccos((bf + cos_phi*sin_theta)/np.abs(1.0 + bf*cos_phi*sin_theta))
                    y1 =  L1*np.sin(angle1)
                    L21 = -L1*np.cos(angle1) + np.sqrt(d*d - y1*y1)
                    time1 = (L1/bf + L21 - d)/c
@@ -131,14 +127,13 @@ def expected_photon_fluence(m,g):
                # Photon 2. Transform angle and energy into the lab frame:
                E2 = 0.5*E*(1.0 - bf*sin_theta*cos_phi)
                if (E2 > erg_window_lo) and (E2 < erg_window_up):
-                   angle2 = bf - cos_phi*sin_theta
-                   angle2 = np.arccos(angle2/np.sqrt(x + angle2*angle2))
+                   angle2 = np.arccos((bf + cos_phi*sin_theta)/np.abs(1.0 + bf*cos_phi*sin_theta))
                    y2 =  L1*np.sin(angle2)
                    L22 = -L1*np.cos(angle2) + np.sqrt(d*d - y2*y2)
                    time2 = (L1/bf + L22 - d)/c
                    if (time2 < dt) and (time2 > 0):
                         counts += 1
-    return naive_fluence*counts/float(number_alps)
+    return naive_one_photon_fluence*counts/float(number_alps)
 
 # Alternative routine that saves the result for each parameter point to a local/unique file.
 # Needs outfile = open('./results_new_{}.txt'.format(rank),'a') and outfile.close() for each rank.

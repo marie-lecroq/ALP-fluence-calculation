@@ -133,7 +133,7 @@ def expected_photon_fluence(m,g):
                    time2 = (L1/bf + L22 - d)/c
                    if (time2 < dt) and (time2 > 0):
                         counts += 1
-    return naive_one_photon_fluence*counts/float(number_alps)
+    return np.array([m, 1.0e9*g, naive_one_photon_fluence*counts/float(number_alps)])
 
 # Alternative routine that saves the result for each parameter point to a local/unique file.
 # Needs outfile = open('./results_new_{}.txt'.format(rank),'a') and outfile.close() for each rank.

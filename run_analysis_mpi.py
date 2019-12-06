@@ -10,6 +10,7 @@ ncores = comm.Get_size()
 
 # Define an output path.
 path = "./"
+verbosity_level = 0
 
 # Define the grid of ALP masses log10(m/eV) and coupling log10(g/GeV^-1) and their combination.
 logm = np.arange(3,9,0.05)
@@ -31,7 +32,7 @@ if (rank > 0):
         if (id > ntasks):
             break
         lgm, lgg = pairs[id]
-        res = expected_photon_fluence(10**lgm,10**(lgg-9.0))
+        res = expected_photon_fluence(10**lgm,10**(lgg-9.0),vebosity_level)
         comm.Send(res, dest= 0)
     print('MPI rank {} finished! MC simulations took {:.1f} mins.'.format( rank, (time.time()-start_time)/60.0 ))
 
@@ -41,7 +42,6 @@ if (rank == 0):
     stat = MPI.Status()
     for task_id in range(1, ntasks+ncores):
         comm.Recv(res, source=MPI.ANY_SOURCE, status=stat)
-        print('{:.3f} {:.3f} {:.10e}'.format(res[0],res[1],res[2]))
         all_results.append(res)
         worker_id = stat.Get_source()
         comm.send(task_id, dest=worker_id)

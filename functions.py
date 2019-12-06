@@ -80,7 +80,7 @@ inv_cdf_massless = interp1d(cdf_vals, erg_vals, kind='linear')
 ### Main functions ###
 
 # Theoretically measured fluence given mass m/eV and ALP-photon coupling g/eV^-1
-def expected_photon_fluence(m,g):
+def expected_photon_fluence(m, g, verbose=0):
     naive_one_photon_fluence = axion_fluence(m,g)
     inv_cdf = inv_cdf_massless
     # Only recalculate CDF from spectrum for heavier axions; otherwise the m = 0 version above is used.
@@ -133,7 +133,11 @@ def expected_photon_fluence(m,g):
                    time2 = (L1/bf + L22 - d)/c
                    if (time2 < dt) and (time2 > 0):
                         counts += 1
-    return np.array([np.log10(m), np.log10(g)+9.0, naive_one_photon_fluence*counts/float(number_alps)])
+    lgm, lgg = np.log10(m), np.log10(g)+9.0
+    res = naive_one_photon_fluence*counts/float(number_alps)
+    if (verbose > 0):
+        print('{:.3f} {:.3f} {:.10e}'.format(lgm, lgg, res))
+    return np.array([lgm, lgg, res])
 
 # Alternative routine that saves the result for each parameter point to a local/unique file.
 # Needs outfile = open('./results_new_{}.txt'.format(rank),'a') and outfile.close() for each rank.

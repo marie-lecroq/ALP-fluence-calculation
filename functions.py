@@ -3,22 +3,24 @@ from scipy.integrate import quad
 from scipy.interpolate import interp1d
 import numpy.random as rd
 
+
 ### Experimental and physical constants ###
 
 alpha = 1.0/137.035999084 #Fine structure constant
-c = 3.0e8 #Speed of light in m/s
+c = 3.0e8 #Speed of light (in m/s)
 
-d = 51.4*3.08567758149137e19 #Distance from SN1987A to Earth in m
-Reff = 3.0e10 #Effective radius of the SN below which photons are not released in m
-ks = 16.8e6 #Effective Debye screening scale in eV
-C = 2.54e71 #Multiplicative constant in eV^-1
-T = 30.6e6 #Effective temperature in eV
+d = 51.4*3.08567758149137e19 #Distance from Earth to SN1987A (in m)
+Reff = 3.0e10 #Effective radius of the SN below which photons are not released (in m)
+ks = 16.8e6 #Effective Debye screening scale (in eV)
+C = 2.54e71 #Multiplicative constant in (eV^-1)
+T = 30.6e6 #Effective temperature (in eV)
 
-dt = 223.0 #Duration of the measurement
-min_erg, max_erg = 0.0, 5.0e8 #Min. and max. values of the energy (for integration)
-erg_window_lo, erg_window_up = 2.5e7, 1.0e8 #Min. and max. values of the energy (the experimental window)
+dt = 223.0 #Duration of the measurement (in s)
+min_erg, max_erg = 0.0, 5.0e8 #Min. and max. values of the energy (for integrating the spectrum; in eV)
+erg_window_lo, erg_window_up = 2.5e7, 1.0e8 #Min. and max. values of the energy (the experimental window; in eV)
 number_alps = int(1e7) #Number of particles of fixed m and g in the simulation
-# N.B.: according to arXiv:1702.02964, results are stable for number_alps > 1e7.
+# N.B.: according to arXiv:1702.02964, results are stable for number_alps >= 1e7.
+
 
 ### Auxiliary functions ###
 
@@ -26,14 +28,14 @@ number_alps = int(1e7) #Number of particles of fixed m and g in the simulation
 def betafactor(m,E):
     return np.sqrt(1.0 - m*m/(E*E))
 
-# Decay length according to Eq (3) in arXiv:1702.02964
+# ALP decay length (in m) [Eq. (3) in arXiv:1702.02964]
 def l_ALP(m,g,E):
     x = 1.0e7/m
     x2 = x*x
     y = 1.0e-19/g
     return 4.0e13 * betafactor(m,E) * (E/1.0e8) * (x2*x2) * (y*y)
 
-# Mass-dependent cross section
+# Mass-dependent cross section (in eV^-2) [Eq. (9) in arXiv:1702.02964]
 def sigma(m,g,E):
     res = 0.0
     if E > m:
@@ -52,14 +54,14 @@ def sigma(m,g,E):
             res = prefactor * ( (1.0 + 0.25*k2/e2 - 0.5*m2/e2)*np.log((yp + k2)/(ym + k2)) - bf - (0.25*m4/(k2*e2))*np.log((m4 + k2*yp)/(m4 + k2*ym)) )
     return res
 
-# Energy distribution of the ALPs
+# Energy spectrum of the ALPs (in eV^-1) [Eq. (7) in arXiv:1702.02964]
 def spectrum(m,g,E):
     res = 0.0
     if E > 0:
         res = C*E*E*sigma(m,g,E)/(np.exp(E/T) - 1.0)
     return res
 
-# Axion fluence from SN1987A (= naive fluence for one photon per axion)
+# Axion fluence from SN1987A (= naive fluence for one photon per axion) in (cm^-2)
 def axion_fluence(m,g):
     res = quad(lambda E : spectrum(m,g,E), min_erg, max_erg)[0]
     return (1.0/(4.0*np.pi*d*d)) * res / 1.0e4
@@ -67,7 +69,7 @@ def axion_fluence(m,g):
 # Compute the CDF for the low-mass energy spectrum:
 erg_vals = np.linspace(min_erg, max_erg, num=5001)
 cdf_vals = []
-# N.B. It is okay to fix the value of g as it just rescales the spectrum.
+# N.B. It is okay to fix the coupling g to a convenient value as it just rescales the spectrum.
 norm = quad(lambda E : spectrum(0.0,1.0e-20,E), min_erg, max_erg)[0]
 for erg in erg_vals:
     temp = quad(lambda E : spectrum(0.0,1.0e-20,E), min_erg, erg)[0]
@@ -77,9 +79,10 @@ for erg in erg_vals:
         cdf_vals.append(0.0)
 inv_cdf_massless = interp1d(cdf_vals, erg_vals, kind='linear')
 
+
 ### Main functions ###
 
-# Theoretically measured fluence given mass m/eV and ALP-photon coupling g/eV^-1
+# Theoretically measured fluence given mass m/eV and ALP-photon coupling g/eV^-1 (in cm^-2)
 def expected_photon_fluence(m, g, verbose=0):
     naive_one_photon_fluence = axion_fluence(m,g)
     inv_cdf = inv_cdf_massless

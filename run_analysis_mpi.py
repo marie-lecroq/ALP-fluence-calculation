@@ -8,8 +8,8 @@ comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 ncores = comm.Get_size()
 
-# Define an output path.
-path = "./"
+# Define output path and verboity level.
+output_path = "./"
 verbosity_level = 0
 
 # Define the grid of ALP masses log10(m/eV) and coupling log10(g/GeV^-1) and their combination.
@@ -48,7 +48,7 @@ if (rank == 0):
     print('All MPI tasks finished after {:.1f} mins!'.format( rank, (time.time()-start_time)/60.0 ))
 
     start_io_time = time.time()
-    out_file_name = path+"SN1987A_DecayFluence.dat"
+    out_file_name = output_path+"SN1987A_DecayFluence.dat"
     print('Formatting results and saving them to '+out_file_name+'.')
     a = np.array(all_results)
     a = a[a[:,1].argsort()]

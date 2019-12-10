@@ -32,7 +32,7 @@ if (rank > 0):
         if (id > ntasks):
             break
         lgm, lgg = pairs[id]
-        res = expected_photon_fluence(10**lgm,10**(lgg-9.0),vebosity_level)
+        res = expected_photon_fluence(10**lgm,10**(lgg-9.0),verbosity_level)
         comm.Send(res, dest= 0)
     print('MPI rank {} finished! MC simulations took {:.1f} mins.'.format( rank, (time.time()-start_time)/60.0 ))
 

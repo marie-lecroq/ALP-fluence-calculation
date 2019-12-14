@@ -2,6 +2,7 @@ import numpy as np
 from scipy.integrate import quad
 from scipy.interpolate import interp1d
 import numpy.random as rd
+import time
 
 ### Experimental and physical constants ###
 
@@ -78,6 +79,7 @@ inv_cdf_massless = interp1d(cdf_vals, erg_vals, kind='linear')
 
 # Theoretically measured fluence given mass m/eV and ALP-photon coupling g/eV^-1 (in cm^-2)
 def expected_photon_fluence(m, g, verbose=0):
+    start = time.time()
     naive_one_photon_fluence = axion_fluence(m,g)
     inv_cdf = inv_cdf_massless
     # Only recalculate CDF from spectrum for heavier axions; otherwise the m = 0 version above is used.
@@ -133,7 +135,9 @@ def expected_photon_fluence(m, g, verbose=0):
                     counts += 1
     lgm, lgg = np.log10(m), np.log10(g)+9.0
     res = naive_one_photon_fluence*counts/float(number_alps)
-    if (verbose > 0):
+    if (verbose > 1):
+        print('Calculation took {:.1f} mins. Result for {:.3f}, {:.3f} is {:.6e}.'.format((time.time()-start)/60.0, lgm, lgg, res))
+    elif (verbose > 0):
         print('{:.3f} {:.3f} {:.10e}'.format(lgm, lgg, res))
     return np.array([lgm, lgg, res])
 

@@ -38,12 +38,13 @@ if (rank > 0):
 
 # Let the master process distribute tasks and receive results:
 if (rank == 0):
+    print('Master processed beginning to distribute tasks...')
     all_results = []
-    stat = MPI.Status()
     for task_id in range(1, ntasks+ncores):
         comm.Recv(res, source=MPI.ANY_SOURCE, status=stat)
-        all_results.append(res)
+        stat = MPI.Status()
         worker_id = stat.Get_source()
+        all_results.append(res)
         comm.send(task_id, dest=worker_id)
     print('All MPI tasks finished after {:.1f} mins!'.format( rank, (time.time()-start_time)/60.0 ))
 

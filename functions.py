@@ -16,7 +16,7 @@ C = 2.54e71 #Multiplicative constant in (eV^-1)
 T = 30.6e6 #Effective temperature (in eV)
 
 dt = 223.0 #Duration of the measurement (in s)
-min_erg, max_erg = 0.0, 5.0e9 #Min. and max. values of the energy (for integrating the spectrum; in eV)
+min_erg, max_erg = 0.0, 5.0e8 #Min. and max. values of the energy (for integrating the spectrum; in eV)
 erg_window_lo, erg_window_up = 2.5e7, 1.0e8 #Min. and max. values of the energy (the experimental window; in eV)
 number_alps = int(1e7) #Number of particles of fixed m and g in the simulation
 # N.B.: according to arXiv:1702.02964, results are stable for number_alps >= 1e7.
@@ -84,13 +84,12 @@ def expected_photon_fluence(m, g, verbose=0):
     inv_cdf = inv_cdf_massless
     # Only recalculate CDF from spectrum for heavier axions; otherwise the m = 0 version above is used.
     if (m > 1.0e6):
-        new_max_erg = min(500.0*m,5.0e9)
+        new_max_erg = max(5.0e8,100.0*m)
         # Rescale the integral for numerical stability.
         # N.B. It is okay to fix the value of g to a convenient value as it just rescales the spectrum.
-        erg_pivot = max(1.0e8,5.0*m)
+        erg_pivot = 5.0*m
         int_rescaling = spectrum(m,1.0e-20,erg_pivot)
-        n = int((new_max_erg-m)/(0.1*m))+1
-        erg_vals = np.linspace(m, new_max_erg, num=n)
+        erg_vals = np.linspace(m, new_max_erg, num=1001)
         norm = quad(lambda E : spectrum(m,1.0e-20,E)/int_rescaling, m, new_max_erg)[0]
         norm = norm*int_rescaling
         cdf_vals = [quad(lambda E : spectrum(m,1.0e-20,E)/norm, m, erg)[0] for erg in erg_vals]

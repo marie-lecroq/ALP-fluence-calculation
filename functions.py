@@ -140,8 +140,8 @@ def expected_photon_fluence(m, g, verbose=0):
         print('{:.3f} {:.3f} {:.10e}'.format(lgm, lgg, res))
     return np.array([lgm, lgg, res])
 
-# Alternative routine that saves the result for each parameter point to a local/unique file.
-# Good for unstable systems or saving intermediate results.
+# Alternative routine that saves the result for each parameter point to a local, unique file for each process.
+# Not recommended for production runs; only for debugging and unstable systems.
 def expected_photon_fluence_checkpoints(m,g,outpath,rank):
     lgm, lgg = np.log10(m), np.log10(g)+9.0
     outfile = open(outpath+'/local_results_{}.txt'.format(rank),'a')

@@ -1,10 +1,10 @@
-# Calculation of the expected fluence from axion-photon decays after SN 1987A
+# Calculation of the expected photon fluence from ALP decays after SN 1987A
 
-Code to calculate the expected fluence from axion-photon decays after SN 1987A by Marie Lecroq, Sebastian Hoof, and Csaba Balazs. Results of this code were published as a part of the **GAMBIT CosmoBit** paper.
+Code to calculate the expected fluence from decays of axion-like partizles (ALPs) into photons after SN 1987A. Written by Marie Lecroq, Sebastian Hoof, and Csaba Balazs. Results of this code were published as a part of the **GAMBIT CosmoBit** paper.
 
 ## Summary
 
-Axions are expected to be produced in supernovae and can subsequently e.g. decay into two photons or convert into one photon in a magnetic field on their way towards an observer. The non-observation of a such photons from the direction of SN 1987A [[Phys. Rev. Lett. 62, 505 (1989)]](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.62.505) can be used to place limits on the axion-photon coupling. Here, we focus on keV to GeV ALPs and reproduce and extend the work presented in Ref. [[arXiv:1702.02964]](https://arxiv.org/abs/1702.02964).
+Axion-like particles are produced in supernovae and can subsequently decay into two photons or convert into one photon inside of magnetic fields on their way towards the observer. The non-observation of a such photons from the direction of SN 1987A [[Phys. Rev. Lett. 62, 505 (1989)]](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.62.505) can be used to place limits on the axion-photon coupling. Here, we focus on ALPs with masses of keV to GeV and reproduce and extend the work presented in Ref. [[arXiv:1702.02964]](https://arxiv.org/abs/1702.02964).
 
 ## Results
 
@@ -16,7 +16,10 @@ In the figure above, we show the limits obtained from using our code. The blue d
 
 ## The code
 
-Decription of the code in words. Say that we conduct a 'full' MC simulation without any rescaling factors and finer binning. More detailled description in the CosmoBit paper and as a PDF in the repo?
+The code implements a full Monte Carlo simulation without any rescaling factors. We also use a finer binning and perform the calculation in a wider region of parameter space than than Ref. [[arXiv:1702.02964]](https://arxiv.org/abs/1702.02964). We provide a documentation in [the documentation](documentation.pdf). The following Python (code tested with version 3.5.7) packages need to be installed in order for the code to run: `numpy`, `scipy`, `mpi4py`, `matplotlib`, and `time`.
+
+As a quick start guide, the file [`functions.py`](functions.py) contains the function `expected_photon_fluence(m, g, verbose=0)`, which computes the expected photon flunce (in cm<sup>-2</sup>) given and ALP mass `m` (in eV) and ALP-photon coupling `g` (in GeV<sup>-1</sup>). A parallel run of the code can be invoked by e.g.
+...`mpiexec python run_analysis_mpi.py`
 
 ## References
 

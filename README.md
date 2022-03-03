@@ -1,31 +1,35 @@
-# Calculation of the expected photon fluence from ALP decays after SN 1987A
+# The expected photon fluence from ALP decays after SN 1987A
 
-Code to calculate the expected fluence from decays of axion-like particles (ALPs) into photons after SN 1987A. Written by Marie Lecroq, Sebastian Hoof, and Csaba Balazs. Results of this code were published as a part of the **GAMBIT CosmoBit** paper.
+Code for calculating the expected fluence from decays of axion-like particles into photons after SN 1987A.
+
+Monte Carlo methods written by Marie Lecroq, Sebastian Hoof, and Csaba Balazs for ref. [[1]](#cosmoalp), based on ref. [[2]](#res2).
 
 ## Summary
 
-Axion-like particles are produced in supernovae and can subsequently decay into two photons or convert into one photon inside of magnetic fields on their way towards the observer. The non-observation of a such photons from the direction of SN 1987A [[Phys. Rev. Lett. 62, 505 (1989)]](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.62.505) can be used to place limits on the axion-photon coupling. Here, we focus on ALPs with masses of keV to GeV and reproduce and extend the work presented in Ref. [[arXiv:1702.02964]](https://arxiv.org/abs/1702.02964).
+Axion-like particles (ALPs) are produced in supernovae and subsequently decay into two photons or convert into photons inside magnetic fields on their way towards Earth. The non-observation [[3]](#data) of a such photons from the direction of SN 1987A can be used to place limits on the ALP-photon coupling [[4]](#res1). We focus on ALPs with masses of keV to GeV and reproduce and extend the work presented in ref. [[2]](#res2).
 
 ## Results
 
 <p align="center">
-  <img width="600" height="488" src="figures/exclusion_plot.png">
+  <img width="600" height="488" src="results/exclusion_plot.png">
 </p>
 
-In the figure above, we show the limits obtained from using our code. The blue dashed line shows the limits for the range of validity obtained in Ref. [[arXiv:1702.02964]](https://arxiv.org/abs/1702.02964) for comparison. Note that their grid spacing in parameter space is 4x wider than ours (0.2 vs 0.05 dex).
+The figure above shows the 3 &sigma; limit obtained from using our Monte Carlo routines (black line). The blue dashed line shows the limits obtained by ref. [[2]](#res2) for comparison; they only considered ALP masses up to 100 MeV and ALP-photon couplings up to 10<sup>-9</sup> GeV<sup>-1</sup>. Our fluxes tend to be higher than in ref. [[2]](#res2) by a factor of about 1.8 in agreement with ref. [[5]](#update).
 
 ## The code
 
-The code implements a full Monte Carlo simulation without any rescaling factors. We also use a finer binning and perform the calculation in a wider region of parameter space than than Ref. [[arXiv:1702.02964]](https://arxiv.org/abs/1702.02964). We provide a documentation in [the documentation](documentation.pdf). The following Python (code tested with version 3.5.7) packages need to be installed in order to use all features of the code: `numpy`, `scipy`, `mpi4py`, `matplotlib`, and `time`.
+The code implements a full Monte Carlo simulation without any rescaling factors. Details about the theoretical computations and the code can be found in [the documentation](documentation.pdf). The Python code was developed with Python version 3.5.7 and only rely on standard packages such as `numpy` and `scipy`.
 
-As a quick start guide, the file [`functions.py`](functions.py) contains the function `expected_photon_fluence(m, g, verbose=0)`, which computes the expected photon flunce (in cm<sup>-2</sup>) given and ALP mass `m` (in eV) and ALP-photon coupling `g` (in GeV<sup>-1</sup>). A parallel run of the code can be invoked by e.g.
-
-   `mpiexec python run_analysis_mpi.py`
-
-Finally, the Python script [`plot_results.py`](plot_results.py) can be used to generate maps of the photon fluence, likelihood, and accepted fraction of decay photons.
+The file [`fluence_calc_mc.py`](code/fluence_calc_mc.py ) contains the function `expected_photon_fluence(m, g, verbose=0)`, which computes the expected photon flunce (in cm<sup>-2</sup>) given and ALP mass `m` (in eV) and ALP-photon coupling `g` (in GeV<sup>-1</sup>). A parallel run of the code can be invoked by `mpiexec python run_analysis_mpi.py`.
 
 ## References
 
-* Experimental data: E. L. Chupp, W. T. Vestrand, and C. Reppin. [&ldquo;*Experimental Limits on the Radiative Decay of SN 1987A Neutrinos*&ldquo;](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.62.505), Phys. Rev. Lett. **62**, 505 (1989)
-* Original study: J. Jaeckel, P. C. Malta, and J. Redondo. [&ldquo;*Decay photons from the axionlike particles burst of type II supernovae*&ldquo;](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.98.055032), Phys. Rev. D **98**, 055032 (2018)
-* CosmoBit paper: tba
+<a id="cosmoalp">[1]</a> CosmoALP paper.
+
+<a id="res2">[2]</a> J. Jaeckel, P. C. Malta, and J. Redondo. [&ldquo;*Decay photons from the axionlike particles burst of type II supernovae,*&rdquo;](https://doi.org/10.1103/PhysRevD.98.055032) Phys. Rev. D **98**, 055032 (2018), [[arXiv:1702.02964]](https://arxiv.org/abs/1702.02964).
+
+<a id="data">[3]</a>  E. L. Chupp, W. T. Vestrand, and C. Reppin. [&ldquo;*Experimental Limits on the Radiative Decay of SN 1987A Neutrinos,*&rdquo;](https://doi.org/10.1103/PhysRevLett.62.505) Phys. Rev. Lett. **62**, 505 (1989).
+
+<a id="res1">[4]</a>  M. Giannotti, L. D. Duffy, and R. Nita, [&ldquo;*New constraints for heavy axion-like particles from supernovae,*&rdquo;](https://doi.org/10.1088/1475-7516/2011/01/015) JCAP **01** (2011) 015, [[arXiv:1009.5714]](https://arxiv.org/abs/1009.5714).
+
+<a id="update">[5]</a>  A. Caputo, G. Raffelt, and E. Vitagliano, [&ldquo;*Muonic Boson Limits: Supernova Redux,*&rdquo;](https://doi.org/10.1103/PhysRevD.105.035022) Phys. Rev. D **105**, 035022 (2022), [[arXiv:2109.03244]](https://arxiv.org/abs/2109.03244).

@@ -1,8 +1,9 @@
+import time
 import numpy as np
+import numpy.random as rd
+
 from scipy.integrate import quad
 from scipy.interpolate import interp1d
-import numpy.random as rd
-import time
 
 """
 Experimental and physical constants

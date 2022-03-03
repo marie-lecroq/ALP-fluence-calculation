@@ -1,7 +1,11 @@
 from mpi4py import MPI
+import os
+import sys
 import time
 
-from functions import *
+script_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, script_path+"/code")
+from fluence_calc_mc import *
 
 # Set up the MPI environment and variables.
 comm = MPI.COMM_WORLD
@@ -13,15 +17,15 @@ output_path = "./"
 verbosity_level = 0
 
 # Define the grid of ALP masses log10(m/eV) and coupling log10(g/GeV^-1) and their combination.
-logm = np.arange(3.0,9.0,0.05)
-logg = np.arange(-13.0,-3.0,0.05)
+logm = np.arange(3.0, 9.0, 0.05)
+logg = np.arange(-13.0, -3.0, 0.05)
 pairs = np.array(np.meshgrid(logm, logg)).T.reshape(-1,2)
 ntasks = len(pairs)
 
 start_time = time.time()
-# Let the workers calculate the flux.
+
 if (rank > 0):
-    # Send first result to master to signal that this process is ready for work.
+    # Send first result to main process to signal that this proc is ready for more tasks
     lgm, lgg = pairs[rank-1]
     res = expected_photon_fluence(10**lgm,10**(lgg-9.0),verbosity_level)
     comm.Send(res, dest=0)
@@ -34,9 +38,9 @@ if (rank > 0):
         comm.Send(res, dest=0)
     print('MPI rank {} finished! MC simulations took {:.1f} mins.'.format(rank, (time.time()-start_time)/60.0))
 
-# Let the master process distribute tasks and receive results:
+# Main process distribute tasks and receive results
 if (rank == 0):
-    print('Master process waiting for results from {} other processes...'.format(ncores-1), flush=True)
+    print('Main process waiting for results from {} other processes...'.format(ncores-1), flush=True)
     all_results = []
     # Receive results and send more work (send out ncores work task too many to finalise jobs).
     for task_id in range(ncores, ntasks+ncores):
@@ -57,5 +61,6 @@ if (rank == 0):
     a = a[a[:,0].argsort(kind='mergesort')]
     header_string = "Fluence of SN1987A photons from axion decay\nMC simulations by Marie Lecroq, Sebastian Hoof, and Csaba Balazs based on arXiv:1702.02964\nColumns: Value of log10(m/eV) | Value of log10(g/GeV^-1) | Fluence value in cm^-2"
     np.savetxt(out_file_name, a, fmt="%.3f %.3f %.10e", header=header_string, comments="# ")
+
     print('Formatting and saving file took {:.2f} mins!'.format((time.time()-start_io_time)/60.0), flush=True)
     print('All tasks complete! Finishing MPI routine now.', flush=True)

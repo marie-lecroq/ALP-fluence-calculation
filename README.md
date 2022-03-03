@@ -2,7 +2,7 @@
 
 Code for calculating the expected fluence from decays of axion-like particles into photons after SN 1987A.
 
-Monte Carlo methods written by Marie Lecroq, Sebastian Hoof, and Csaba Balazs for ref. [[1]](#cosmoalp), based on ref. [[2]](#res2).
+Monte Carlo methods written by Marie Lecroq, Sebastian Hoof, and Csaba Balazs, based on ref. [[2]](#res2). Please cite ref. [[1]](#cosmoalp) when using this code.
 
 ## Summary
 
@@ -11,18 +11,20 @@ Axion-like particles (ALPs) are produced in supernovae and subsequently decay in
 ## Results
 
 <p align="center">
-  <img width="600" height="488" src="results/exclusion_plot.png">
+  <img width="500" height="418" src="results/alp_decay_constraints_sn1987a.png">
 </p>
 
-The figure above shows the 3 &sigma; limit obtained from using our Monte Carlo routines (black line). The blue dashed line shows the limits obtained by ref. [[2]](#res2) for comparison; they only considered ALP masses up to 100 MeV and ALP-photon couplings up to 10<sup>-9</sup> GeV<sup>-1</sup>. Our fluxes tend to be higher than in ref. [[2]](#res2) by a factor of about 1.8 in agreement with ref. [[5]](#update).
+The figure above shows the 3 &sigma; limit obtained from using our Monte Carlo routines (black line). The blue dashed line shows the limits obtained by ref. [[2]](#res2) for comparison; they only considered ALP masses up to 100 MeV and ALP-photon couplings up to 10<sup>-9</sup> GeV<sup>-1</sup>. Our fluxes tend to be higher than in ref. [[2]](#res2) by a factor of about 1.8 in agreement with ref. [[5]](#update). The figure can be produced with the [`plot_likelihood.py`](results/plot_likelihood.py) script.
 
 ## The code
 
 The code implements a full Monte Carlo simulation without any rescaling factors. Details about the theoretical computations and the code can be found in [the documentation](documentation.pdf). The Python code was developed with Python version 3.5.7 and only rely on standard packages such as `numpy` and `scipy`.
 
-The file [`fluence_calc_mc.py`](code/fluence_calc_mc.py ) contains the function `expected_photon_fluence(m, g, verbose=0)`, which computes the expected photon flunce (in cm<sup>-2</sup>) given and ALP mass `m` (in eV) and ALP-photon coupling `g` (in GeV<sup>-1</sup>). A parallel run of the code can be invoked by `mpiexec python run_analysis_mpi.py`.
+The file [`fluence_calc_mc.py`](code/fluence_calc_mc.py) contains the function `expected_photon_fluence(m, g, verbose=0)`, which computes the expected photon flunce (in cm<sup>-2</sup>) given and ALP mass `m` (in eV) and ALP-photon coupling `g` (in GeV<sup>-1</sup>). A parallel run of the code can be invoked by `mpiexec python run_analysis_mpi.py`.
 
 ## References
+
+Please cite ref. [[1]](#cosmoalp) and link to this repo when you made use of our code.
 
 <a id="cosmoalp">[1]</a> CosmoALP paper.
 

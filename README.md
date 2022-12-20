@@ -1,12 +1,16 @@
 # The expected photon fluence from ALP decays after SN 1987A
 
-Code for calculating the expected fluence from decays of axion-like particles into photons after SN 1987A.
-
-Monte Carlo methods written by Marie Lecroq, Sebastian Hoof, and Csaba Balazs, based on ref. [[2]](#res2). Please cite ref. [[1]](#cosmoalp) when using this code.
+*<font size="3"><font color="red">**N.B.**</font> Further development of this repository has been discontinued after the publication of ref. [[1]](#cosmoalp). Please visit the [`SNax` repository](https://github.com/sebhoof/snax) for a follow-up project.</font>*
 
 ## Summary
 
+Code authors: Marie Lecroq, Sebastian Hoof, and Csaba Bal&aacute;zs.
+
+This repo contains code for calculating the expected fluence from decays of axion-like particles into photons after SN 1987A, based on the Monte Carlo simulations described in ref. [[2]](#res2).
+
 Axion-like particles (ALPs) are produced in supernovae and subsequently decay into two photons or convert into photons inside magnetic fields on their way towards Earth. The non-observation [[3]](#data) of a such photons from the direction of SN 1987A can be used to place limits on the ALP-photon coupling [[4]](#res1). We focus on ALPs with masses of keV to GeV and reproduce and extend the work presented in ref. [[2]](#res2).
+
+Please cite ref. [[1]](#cosmoalp) when using this code.
 
 ## Results
 
@@ -26,12 +30,12 @@ The file [`fluence_calc_mc.py`](code/fluence_calc_mc.py) contains the function `
 
 Please cite ref. [[1]](#cosmoalp) and link to this repo when you made use of our code.
 
-<a id="cosmoalp">[1]</a> CosmoALP paper.
+<a id="cosmoalp">[1]</a> Csaba Bal&aacute;zs, Sanjay Bloor, Tom&aacute;s E. Gonzalo, *et al*. [&ldquo;*Cosmological constraints on decaying axion-like particles: a global analysis,*&rdquo;](https://doi.org/10.1088/1475-7516/2022/12/027) JCAP **12** (2022) 027, [[arXiv:2205.13549]](https://arxiv.org/abs/2205.13549).
 
-<a id="res2">[2]</a> J. Jaeckel, P. C. Malta, and J. Redondo. [&ldquo;*Decay photons from the axionlike particles burst of type II supernovae,*&rdquo;](https://doi.org/10.1103/PhysRevD.98.055032) Phys. Rev. D **98**, 055032 (2018), [[arXiv:1702.02964]](https://arxiv.org/abs/1702.02964).
+<a id="res2">[2]</a> J. Jaeckel, P. C. Malta, and J. Redondo. [&ldquo;*Decay photons from the axionlike particles burst of type II supernovae,*&rdquo;](https://doi.org/10.1103/PhysRevD.98.055032) Phys. Rev. D **98** (2018) 055032, [[arXiv:1702.02964]](https://arxiv.org/abs/1702.02964).
 
-<a id="data">[3]</a>  E. L. Chupp, W. T. Vestrand, and C. Reppin. [&ldquo;*Experimental Limits on the Radiative Decay of SN 1987A Neutrinos,*&rdquo;](https://doi.org/10.1103/PhysRevLett.62.505) Phys. Rev. Lett. **62**, 505 (1989).
+<a id="data">[3]</a>  E. L. Chupp, W. T. Vestrand, and C. Reppin. [&ldquo;*Experimental Limits on the Radiative Decay of SN 1987A Neutrinos,*&rdquo;](https://doi.org/10.1103/PhysRevLett.62.505) Phys. Rev. Lett. **62** (1989) 505.
 
 <a id="res1">[4]</a>  M. Giannotti, L. D. Duffy, and R. Nita, [&ldquo;*New constraints for heavy axion-like particles from supernovae,*&rdquo;](https://doi.org/10.1088/1475-7516/2011/01/015) JCAP **01** (2011) 015, [[arXiv:1009.5714]](https://arxiv.org/abs/1009.5714).
 
-<a id="update">[5]</a>  A. Caputo, G. Raffelt, and E. Vitagliano, [&ldquo;*Muonic Boson Limits: Supernova Redux,*&rdquo;](https://doi.org/10.1103/PhysRevD.105.035022) Phys. Rev. D **105**, 035022 (2022), [[arXiv:2109.03244]](https://arxiv.org/abs/2109.03244).
+<a id="update">[5]</a>  A. Caputo, G. Raffelt, and E. Vitagliano, [&ldquo;*Muonic Boson Limits: Supernova Redux,*&rdquo;](https://doi.org/10.1103/PhysRevD.105.035022) Phys. Rev. D **105** (2022) 035022, [[arXiv:2109.03244]](https://arxiv.org/abs/2109.03244).
